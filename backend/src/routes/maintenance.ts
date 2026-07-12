@@ -5,7 +5,7 @@ import {
   updateMaintenanceStatus,
 } from '../controllers/maintenance';
 import { requireAuth, requireRoles } from '../middlewares/auth';
-import { Role } from '@prisma/client';
+import { Role } from '../utils/enums';
 
 const router = Router();
 

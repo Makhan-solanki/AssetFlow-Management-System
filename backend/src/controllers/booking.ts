@@ -4,7 +4,7 @@ import { sendResponse } from '../utils/response';
 import { asyncHandler } from '../utils/asyncHandler';
 import { AppError } from '../utils/errors';
 import { AuthenticatedRequest } from '../middlewares/auth';
-import { BookingStatus, AssetStatus } from '@prisma/client';
+import { BookingStatus, AssetStatus } from '../utils/enums';
 
 export const getBookings = asyncHandler(
   async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {

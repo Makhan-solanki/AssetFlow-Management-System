@@ -1,4 +1,5 @@
-import { PrismaClient, Role, UserStatus, AssetStatus, AuditCondition } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
+import { Role, UserStatus, AssetStatus, AuditCondition } from '../src/utils/enums';
 import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
@@ -28,6 +29,7 @@ async function main() {
       password: hashedPassword,
       role: Role.ADMIN,
       status: UserStatus.ACTIVE,
+      emailVerified: true,
     },
   });
 
@@ -38,16 +40,7 @@ async function main() {
       password: hashedPassword,
       role: Role.ASSET_MANAGER,
       status: UserStatus.ACTIVE,
-    },
-  });
-
-  const deptHead = await prisma.user.create({
-    data: {
-      name: 'John Doe (IT Head)',
-      email: 'head@assetflow.com',
-      password: hashedPassword,
-      role: Role.DEPARTMENT_HEAD,
-      status: UserStatus.ACTIVE,
+      emailVerified: true,
     },
   });
 
@@ -58,6 +51,7 @@ async function main() {
       password: hashedPassword,
       role: Role.EMPLOYEE,
       status: UserStatus.ACTIVE,
+      emailVerified: true,
     },
   });
 
@@ -68,34 +62,19 @@ async function main() {
       password: hashedPassword,
       role: Role.EMPLOYEE,
       status: UserStatus.ACTIVE,
+      emailVerified: true,
     },
   });
 
-  console.log('Users created.');
+  console.log('Default users created.');
 
   // 3. Create Departments
   const itDept = await prisma.department.create({
     data: {
       name: 'Information Technology',
       status: UserStatus.ACTIVE,
-      headId: deptHead.id,
+      headId: admin.id,
     },
-  });
-
-  // Assign John Doe, Alice and Bob to IT Dept
-  await prisma.user.update({
-    where: { id: deptHead.id },
-    data: { departmentId: itDept.id },
-  });
-
-  await prisma.user.update({
-    where: { id: employee1.id },
-    data: { departmentId: itDept.id },
-  });
-
-  await prisma.user.update({
-    where: { id: employee2.id },
-    data: { departmentId: itDept.id },
   });
 
   const hrDept = await prisma.department.create({
@@ -111,30 +90,30 @@ async function main() {
   const laptops = await prisma.assetCategory.create({
     data: {
       name: 'Laptops & Workstations',
-      customFields: [
+      customFields: JSON.stringify([
         { name: 'ram', type: 'string', required: true },
         { name: 'storage', type: 'string', required: true },
         { name: 'warrantyMonths', type: 'number', required: false },
-      ],
+      ]),
     },
   });
 
   const furniture = await prisma.assetCategory.create({
     data: {
       name: 'Office Furniture',
-      customFields: [
+      customFields: JSON.stringify([
         { name: 'material', type: 'string', required: true },
-      ],
+      ]),
     },
   });
 
   const spaces = await prisma.assetCategory.create({
     data: {
       name: 'Conference Rooms & Cabins',
-      customFields: [
+      customFields: JSON.stringify([
         { name: 'capacity', type: 'number', required: true },
         { name: 'hasProjector', type: 'boolean', required: true },
-      ],
+      ]),
     },
   });
 
@@ -154,7 +133,7 @@ async function main() {
       isBookable: false,
       status: AssetStatus.ALLOCATED,
       departmentId: itDept.id,
-      customValues: { ram: '32GB', storage: '1TB', warrantyMonths: 24 },
+      customValues: JSON.stringify({ ram: '32GB', storage: '1TB', warrantyMonths: 24 }),
     },
   });
 
@@ -170,7 +149,7 @@ async function main() {
       location: 'HQ - Floor 2',
       isBookable: false,
       status: AssetStatus.AVAILABLE,
-      customValues: { ram: '16GB', storage: '512GB', warrantyMonths: 12 },
+      customValues: JSON.stringify({ ram: '16GB', storage: '512GB', warrantyMonths: 12 }),
     },
   });
 
@@ -186,7 +165,7 @@ async function main() {
       location: 'HQ - Floor 3',
       isBookable: false,
       status: AssetStatus.AVAILABLE,
-      customValues: { material: 'Mesh & Aluminum' },
+      customValues: JSON.stringify({ material: 'Mesh & Aluminum' }),
     },
   });
 
@@ -202,7 +181,7 @@ async function main() {
       location: 'HQ - Floor 1',
       isBookable: true,
       status: AssetStatus.AVAILABLE,
-      customValues: { capacity: 12, hasProjector: true },
+      customValues: JSON.stringify({ capacity: 12, hasProjector: true }),
     },
   });
 

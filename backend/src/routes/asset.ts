@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { getAssets, getAssetById, registerAsset, updateAsset } from '../controllers/asset';
 import { requireAuth, requireRoles } from '../middlewares/auth';
-import { Role } from '@prisma/client';
+import { Role } from '../utils/enums';
 import { validateBody } from '../middlewares/validate';
 import { registerAssetSchema, updateAssetSchema } from '../validators/asset';
 

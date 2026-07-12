@@ -4,7 +4,7 @@ import { sendResponse } from '../utils/response';
 import { asyncHandler } from '../utils/asyncHandler';
 import { AppError } from '../utils/errors';
 import { AuthenticatedRequest } from '../middlewares/auth';
-import { AuditStatus, AuditCondition, AssetStatus } from '@prisma/client';
+import { AuditStatus, AuditCondition, AssetStatus } from '../utils/enums';
 
 export const createAuditCycle = asyncHandler(
   async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -119,7 +119,7 @@ export const closeAuditCycle = asyncHandler(
       scopeClause.departmentId = cycle.departmentId;
     }
     if (cycle.location) {
-      scopeClause.location = { contains: cycle.location, mode: 'insensitive' };
+      scopeClause.location = { contains: cycle.location };
     }
 
     const scopedAssets = await prisma.asset.findMany({

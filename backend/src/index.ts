@@ -1,6 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+
 import authRouter from './routes/auth';
 import orgRouter from './routes/org';
 import assetRouter from './routes/asset';
@@ -15,6 +18,44 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Security Middlewares
+app.use(helmet()); // Set secure HTTP headers
+
+// Rate Limiter
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // limit each IP to 200 requests per windowMs
+  message: { message: 'Too many requests from this IP, please try again after 15 minutes' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api', limiter);
+
+// Custom XSS Sanitizer Middleware
+function sanitizeInput(obj: any): any {
+  if (typeof obj === 'string') {
+    return obj.replace(/<[^>]*>/g, ''); // Strip HTML tags to prevent XSS
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(sanitizeInput);
+  }
+  if (obj !== null && typeof obj === 'object') {
+    const res: any = {};
+    for (const key in obj) {
+      res[key] = sanitizeInput(obj[key]);
+    }
+    return res;
+  }
+  return obj;
+}
+
+app.use((req, res, next) => {
+  if (req.body) req.body = sanitizeInput(req.body);
+  if (req.query) req.query = sanitizeInput(req.query);
+  if (req.params) req.params = sanitizeInput(req.params);
+  next();
+});
 
 // Middlewares
 app.use(cors({

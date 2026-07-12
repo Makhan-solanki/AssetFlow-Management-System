@@ -4,7 +4,7 @@ import { sendResponse } from '../utils/response';
 import { asyncHandler } from '../utils/asyncHandler';
 import { AppError } from '../utils/errors';
 import { AuthenticatedRequest } from '../middlewares/auth';
-import { MaintenanceStatus, AssetStatus } from '@prisma/client';
+import { MaintenanceStatus, AssetStatus } from '../utils/enums';
 import { cache } from '../config/redis';
 
 export const getMaintenanceRequests = asyncHandler(

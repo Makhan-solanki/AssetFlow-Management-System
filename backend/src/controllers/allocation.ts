@@ -4,7 +4,7 @@ import { sendResponse } from '../utils/response';
 import { asyncHandler } from '../utils/asyncHandler';
 import { AppError } from '../utils/errors';
 import { AuthenticatedRequest } from '../middlewares/auth';
-import { AssetStatus, AllocationStatus, TransferStatus } from '@prisma/client';
+import { AssetStatus, AllocationStatus, TransferStatus } from '../utils/enums';
 import { cache } from '../config/redis';
 
 // 1. Allocate Asset

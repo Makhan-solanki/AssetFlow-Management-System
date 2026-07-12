@@ -3,7 +3,7 @@ import { prisma } from '../utils/prisma';
 import { sendResponse } from '../utils/response';
 import { asyncHandler } from '../utils/asyncHandler';
 import { AppError } from '../utils/errors';
-import { AssetStatus } from '@prisma/client';
+import { AssetStatus } from '../utils/enums';
 import { cache } from '../config/redis';
 
 export const getAssets = asyncHandler(
@@ -14,9 +14,9 @@ export const getAssets = asyncHandler(
 
     if (search) {
       whereClause.OR = [
-        { name: { contains: String(search), mode: 'insensitive' } },
-        { assetTag: { contains: String(search), mode: 'insensitive' } },
-        { serialNumber: { contains: String(search), mode: 'insensitive' } },
+        { name: { contains: String(search) } },
+        { assetTag: { contains: String(search) } },
+        { serialNumber: { contains: String(search) } },
       ];
     }
 
@@ -33,7 +33,7 @@ export const getAssets = asyncHandler(
     }
 
     if (location) {
-      whereClause.location = { contains: String(location), mode: 'insensitive' };
+      whereClause.location = { contains: String(location) };
     }
 
     if (isBookable !== undefined) {
@@ -49,7 +49,12 @@ export const getAssets = asyncHandler(
       orderBy: { createdAt: 'desc' },
     });
 
-    return sendResponse(res, 200, 'Assets retrieved successfully.', assets);
+    const parsed = assets.map(asset => ({
+      ...asset,
+      customValues: asset.customValues ? JSON.parse(asset.customValues) : {}
+    }));
+
+    return sendResponse(res, 200, 'Assets retrieved successfully.', parsed);
   }
 );
 
@@ -88,7 +93,10 @@ export const getAssetById = asyncHandler(
       return next(new AppError('Asset not found.', 404));
     }
 
-    return sendResponse(res, 200, 'Asset retrieved.', asset);
+    return sendResponse(res, 200, 'Asset retrieved.', {
+      ...asset,
+      customValues: asset.customValues ? JSON.parse(asset.customValues) : {}
+    });
   }
 );
 
@@ -145,14 +153,17 @@ export const registerAsset = asyncHandler(
         location,
         isBookable: isBookable === true || isBookable === 'true',
         status: AssetStatus.AVAILABLE,
-        customValues: customValues || {},
+        customValues: typeof customValues === 'string' ? customValues : JSON.stringify(customValues || {}),
       },
     });
 
     // Invalidate dashboard stats cache
     await cache.del('dashboard:stats');
 
-    return sendResponse(res, 201, 'Asset registered successfully.', asset);
+    return sendResponse(res, 201, 'Asset registered successfully.', {
+      ...asset,
+      customValues: asset.customValues ? JSON.parse(asset.customValues) : {}
+    });
   }
 );
 
@@ -185,14 +196,16 @@ export const updateAsset = asyncHandler(
         isBookable: isBookable !== undefined ? (isBookable === true || isBookable === 'true') : undefined,
         status: status as AssetStatus,
         departmentId: departmentId || null,
-        customValues,
+        customValues: customValues !== undefined ? (typeof customValues === 'string' ? customValues : JSON.stringify(customValues || {})) : undefined,
       },
     });
 
     // Invalidate dashboard stats cache
     await cache.del('dashboard:stats');
 
-    return sendResponse(res, 200, 'Asset updated successfully.', updated);
+    return sendResponse(res, 200, 'Asset updated successfully.', {
+      ...updated,
+      customValues: updated.customValues ? JSON.parse(updated.customValues) : {}
+    });
   }
 );
-

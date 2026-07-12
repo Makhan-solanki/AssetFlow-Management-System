@@ -5,7 +5,7 @@ dotenv.config();
 
 const envSchema = z.object({
   PORT: z.string().transform(Number).default('5000'),
-  DATABASE_URL: z.string().url(),
+  DATABASE_URL: z.string().optional(),
   JWT_SECRET: z.string().default('assetflow_super_secret_jwt_key_for_hackathon'),
   JWT_EXPIRES_IN: z.string().default('7d'),
   REDIS_URL: z.string().optional().default('redis://localhost:6379'),

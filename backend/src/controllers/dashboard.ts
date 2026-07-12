@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../utils/prisma';
 import { sendResponse } from '../utils/response';
 import { asyncHandler } from '../utils/asyncHandler';
-import { AssetStatus, BookingStatus, AllocationStatus, TransferStatus } from '@prisma/client';
+import { AssetStatus, BookingStatus, AllocationStatus, TransferStatus } from '../utils/enums';
 import { cache } from '../config/redis';
 
 export const getDashboardStats = asyncHandler(

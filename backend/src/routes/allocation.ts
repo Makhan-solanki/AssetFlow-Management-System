@@ -8,7 +8,7 @@ import {
   getTransfers,
 } from '../controllers/allocation';
 import { requireAuth, requireRoles } from '../middlewares/auth';
-import { Role } from '@prisma/client';
+import { Role } from '../utils/enums';
 import { validateBody } from '../middlewares/validate';
 import { allocateAssetSchema, transferAssetSchema, returnAssetSchema } from '../validators/allocation';
 

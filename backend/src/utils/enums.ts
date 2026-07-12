@@ -1,0 +1,65 @@
+export enum Role {
+  EMPLOYEE = 'EMPLOYEE',
+  ASSET_MANAGER = 'ASSET_MANAGER',
+  DEPARTMENT_HEAD = 'DEPARTMENT_HEAD',
+  ADMIN = 'ADMIN',
+}
+
+export enum UserStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+}
+
+export enum AssetStatus {
+  AVAILABLE = 'AVAILABLE',
+  ALLOCATED = 'ALLOCATED',
+  RESERVED = 'RESERVED',
+  MAINTENANCE = 'MAINTENANCE',
+  UNDER_MAINTENANCE = 'UNDER_MAINTENANCE',
+  LOST = 'LOST',
+  RETIRED = 'RETIRED',
+  DISPOSED = 'DISPOSED',
+}
+
+export enum AllocationStatus {
+  ALLOCATED = 'ALLOCATED',
+  RETURNED = 'RETURNED',
+  OVERDUE = 'OVERDUE',
+}
+
+export enum TransferStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
+
+export enum BookingStatus {
+  UPCOMING = 'UPCOMING',
+  ONGOING = 'ONGOING',
+  ACTIVE = 'ACTIVE',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+}
+
+export enum MaintenanceStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  TECHNICIAN_ASSIGNED = 'TECHNICIAN_ASSIGNED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  RESOLVED = 'RESOLVED',
+  REJECTED = 'REJECTED',
+  CANCELLED = 'CANCELLED',
+}
+
+export enum AuditStatus {
+  DRAFT = 'DRAFT',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  CLOSED = 'CLOSED',
+}
+
+export enum AuditCondition {
+  VERIFIED = 'VERIFIED',
+  MISSING = 'MISSING',
+  DAMAGED = 'DAMAGED',
+}

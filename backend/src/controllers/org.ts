@@ -3,7 +3,7 @@ import { prisma } from '../utils/prisma';
 import { sendResponse } from '../utils/response';
 import { asyncHandler } from '../utils/asyncHandler';
 import { AppError } from '../utils/errors';
-import { Role, UserStatus } from '@prisma/client';
+import { Role, UserStatus } from '../utils/enums';
 
 // --- Departments ---
 export const getDepartments = asyncHandler(
@@ -29,13 +29,12 @@ export const createDepartment = asyncHandler(
     const dept = await prisma.department.create({
       data: {
         name,
-        headId: headId || null,
-        parentId: parentId || null,
+        headId: headId || undefined,
+        parentId: parentId || undefined,
       },
     });
 
     if (headId) {
-      // Automatically promote/assign headId to DEPARTMENT_HEAD role
       await prisma.user.update({
         where: { id: headId },
         data: { role: Role.DEPARTMENT_HEAD, departmentId: dept.id },
@@ -81,7 +80,11 @@ export const updateDepartment = asyncHandler(
 export const getCategories = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const categories = await prisma.assetCategory.findMany();
-    return sendResponse(res, 200, 'Categories retrieved.', categories);
+    const parsed = categories.map(cat => ({
+      ...cat,
+      customFields: cat.customFields ? JSON.parse(cat.customFields) : []
+    }));
+    return sendResponse(res, 200, 'Categories retrieved.', parsed);
   }
 );
 
@@ -96,10 +99,13 @@ export const createCategory = asyncHandler(
     const category = await prisma.assetCategory.create({
       data: {
         name,
-        customFields: customFields || [],
+        customFields: typeof customFields === 'string' ? customFields : JSON.stringify(customFields || []),
       },
     });
-    return sendResponse(res, 201, 'Asset category created.', category);
+    return sendResponse(res, 201, 'Asset category created.', {
+      ...category,
+      customFields: category.customFields ? JSON.parse(category.customFields) : []
+    });
   }
 );
 
@@ -112,10 +118,13 @@ export const updateCategory = asyncHandler(
       where: { id },
       data: {
         name,
-        customFields,
+        customFields: typeof customFields === 'string' ? customFields : JSON.stringify(customFields || []),
       },
     });
-    return sendResponse(res, 200, 'Asset category updated.', updated);
+    return sendResponse(res, 200, 'Asset category updated.', {
+      ...updated,
+      customFields: updated.customFields ? JSON.parse(updated.customFields) : []
+    });
   }
 );
 

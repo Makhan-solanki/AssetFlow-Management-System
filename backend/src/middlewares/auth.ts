@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { prisma } from '../utils/prisma';
 import { AppError } from '../utils/errors';
 import { asyncHandler } from '../utils/asyncHandler';
-import { Role } from '@prisma/client';
+import { Role } from '../utils/enums';
 import { env } from '../config/env';
 
 export interface AuthenticatedRequest extends Request {
@@ -57,7 +57,13 @@ export const requireAuth = asyncHandler(
         return next(new AppError('This user account has been deactivated.', 403));
       }
 
-      req.user = user;
+      req.user = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role as Role,
+        departmentId: user.departmentId,
+      };
       next();
     } catch (err) {
       return next(new AppError('Invalid token or token expired.', 401));
