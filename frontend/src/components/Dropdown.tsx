@@ -44,7 +44,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   return (
     <div ref={containerRef} className={`relative flex flex-col space-y-1.5 ${className}`}>
       {label && (
-        <span className="block text-xs font-semibold text-slate-400 text-left">
+        <span className="block text-xs font-semibold text-slate-500 text-left">
           {label}
         </span>
       )}
@@ -52,16 +52,16 @@ export const Dropdown: React.FC<DropdownProps> = ({
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-slate-100 flex items-center justify-between text-left font-semibold text-xs shadow-sm hover:border-slate-650 transition-all focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
+          className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-800 flex items-center justify-between text-left font-semibold text-xs shadow-sm hover:border-slate-400 transition-all focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-600"
         >
-          <span className="truncate">
+          <span className="truncate text-slate-600">
             {selectedOption ? selectedOption.label : placeholder}
           </span>
           <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 ml-2" />
         </button>
 
         {isOpen && (
-          <div className="absolute z-30 left-0 right-0 mt-1.5 bg-slate-900 border border-slate-750 rounded-xl shadow-xl max-h-48 overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-100">
+          <div className="absolute z-30 left-0 right-0 mt-1.5 bg-white border border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-100">
             {options.map((opt) => (
               <div
                 key={opt.value}
@@ -69,10 +69,10 @@ export const Dropdown: React.FC<DropdownProps> = ({
                   onChange(opt.value);
                   setIsOpen(false);
                 }}
-                className={`px-3.5 py-2 hover:bg-slate-850 cursor-pointer transition-colors text-left text-xs ${
+                className={`px-3.5 py-2 hover:bg-slate-50 cursor-pointer transition-colors text-left text-xs ${
                   value === opt.value
-                    ? 'bg-purple-100/40 text-brand font-bold'
-                    : 'text-slate-100'
+                    ? 'bg-purple-50 text-purple-600 font-bold'
+                    : 'text-slate-700'
                 }`}
               >
                 {opt.label}

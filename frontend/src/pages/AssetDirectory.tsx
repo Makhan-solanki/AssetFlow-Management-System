@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuthStore } from '../store/useAuthStore';
 import { Search, Plus, Filter, LayoutGrid, Calendar, MapPin, Tag } from 'lucide-react';
+import { Dropdown } from '../components/Dropdown';
+import { DatePicker } from '../components/DatePicker';
 
 interface Category {
   id: string;
@@ -48,7 +50,7 @@ export const AssetDirectory: React.FC = () => {
   const [location, setLocation] = useState('');
   const [isBookable, setIsBookable] = useState(false);
   const [customFieldsValues, setCustomFieldsValues] = useState<any>({});
-  
+
   const [message, setMessage] = useState('');
 
   const fetchAssets = async () => {
@@ -135,7 +137,7 @@ export const AssetDirectory: React.FC = () => {
           <h1 className="text-2xl font-bold tracking-tight text-white font-sans">Asset Directory</h1>
           <p className="text-sm text-slate-400 mt-1">Locate, inspect, search, and register company equipment, devices, or furniture.</p>
         </div>
-        
+
         {(user?.role === 'ADMIN' || user?.role === 'ASSET_MANAGER') && (
           <button
             onClick={() => setShowRegModal(true)}
@@ -148,15 +150,15 @@ export const AssetDirectory: React.FC = () => {
       </div>
 
       {message && (
-        <div className="bg-brand-900/20 border border-brand-500/30 text-brand-300 p-4 rounded-xl text-xs flex justify-between items-center">
+        <div className="bg-purple-50 border border-purple-200 text-purple-800 p-4 rounded-xl text-xs flex justify-between items-center">
           <span>{message}</span>
-          <button onClick={() => setMessage('')} className="font-bold hover:text-white">&times;</button>
+          <button onClick={() => setMessage('')} className="font-bold text-purple-500 hover:text-purple-800">&times;</button>
         </div>
       )}
 
       {/* Advanced Filter Toolbar */}
-      <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex flex-col md:flex-row items-center gap-4 text-xs">
-        <div className="relative w-full md:w-80">
+      <div className="bg-slate-900 border border-slate-800 p-4 rounded-2xl flex flex-col lg:flex-row items-center gap-4 text-xs">
+        <div className="relative w-full lg:w-80">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4" />
           <input
             type="text"
@@ -167,40 +169,41 @@ export const AssetDirectory: React.FC = () => {
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-4 w-full md:w-auto md:ml-auto">
-          <select
+        <div className="grid grid-cols-3 gap-2.5 w-full lg:w-auto lg:ml-auto">
+          <Dropdown
             value={selectedCat}
-            onChange={(e) => setSelectedCat(e.target.value)}
-            className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-300 focus:outline-none"
-          >
-            <option value="">All Categories</option>
-            {categories.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
+            onChange={(val) => setSelectedCat(val)}
+            options={[
+              { value: '', label: 'All Categories' },
+              ...categories.map((c) => ({ value: c.id, label: c.name }))
+            ]}
+            className="text-left"
+          />
 
-          <select
+          <Dropdown
             value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-            className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-300 focus:outline-none"
-          >
-            <option value="">All Statuses</option>
-            <option value="AVAILABLE">Available</option>
-            <option value="ALLOCATED">Allocated</option>
-            <option value="UNDER_MAINTENANCE">Under Maintenance</option>
-            <option value="LOST">Lost</option>
-            <option value="RETIRED">Retired</option>
-          </select>
+            onChange={(val) => setSelectedStatus(val)}
+            options={[
+              { value: '', label: 'All Statuses' },
+              { value: 'AVAILABLE', label: 'Available' },
+              { value: 'ALLOCATED', label: 'Allocated' },
+              { value: 'UNDER_MAINTENANCE', label: 'Under Maintenance' },
+              { value: 'LOST', label: 'Lost' },
+              { value: 'RETIRED', label: 'Retired' }
+            ]}
+            className="text-left"
+          />
 
-          <select
+          <Dropdown
             value={selectedBookable}
-            onChange={(e) => setSelectedBookable(e.target.value)}
-            className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-300 focus:outline-none"
-          >
-            <option value="">Bookable Filter</option>
-            <option value="true">Bookable Shared Resources</option>
-            <option value="false">Non-Bookable Assets</option>
-          </select>
+            onChange={(val) => setSelectedBookable(val)}
+            options={[
+              { value: '', label: 'Bookable Filter' },
+              { value: 'true', label: 'Bookable Shared Resources' },
+              { value: 'false', label: 'Non-Bookable Assets' }
+            ]}
+            className="text-left"
+          />
         </div>
       </div>
 
@@ -217,12 +220,11 @@ export const AssetDirectory: React.FC = () => {
                     <Tag className="w-2.5 h-2.5 text-brand" />
                     {asset.assetTag}
                   </span>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${
-                    asset.status === 'AVAILABLE' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-900/30' :
-                    asset.status === 'ALLOCATED' ? 'bg-brand/10 text-brand border-brand/20' :
-                    asset.status === 'UNDER_MAINTENANCE' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-800/30' :
-                    'bg-red-500/10 text-red-400 border-red-900/30'
-                  }`}>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border ${asset.status === 'AVAILABLE' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-900/30' :
+                      asset.status === 'ALLOCATED' ? 'bg-brand/10 text-brand border-brand/20' :
+                        asset.status === 'UNDER_MAINTENANCE' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-800/30' :
+                          'bg-red-500/10 text-red-400 border-red-900/30'
+                    }`}>
                     {asset.status}
                   </span>
                 </div>
@@ -278,14 +280,14 @@ export const AssetDirectory: React.FC = () => {
           <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-150">
             <div className="bg-slate-950 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
               <h3 className="font-bold text-white text-md">Register New Asset</h3>
-              <button 
+              <button
                 onClick={() => setShowRegModal(false)}
                 className="text-slate-400 hover:text-white text-lg font-bold"
               >
                 &times;
               </button>
             </div>
-            
+
             <form onSubmit={handleRegister} className="p-6 space-y-4 text-xs max-h-[75vh] overflow-y-auto">
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -315,17 +317,14 @@ export const AssetDirectory: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-slate-400 font-semibold mb-1">Category *</label>
-                  <select
-                    required
+                  <Dropdown
                     value={categoryId}
-                    onChange={(e) => handleCategoryChange(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white"
-                  >
-                    <option value="">Select Category...</option>
-                    {categories.map((c) => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                  </select>
+                    onChange={(val) => handleCategoryChange(val)}
+                    options={[
+                      { value: '', label: 'Select Category...' },
+                      ...categories.map((c) => ({ value: c.id, label: c.name }))
+                    ]}
+                  />
                 </div>
                 <div>
                   <label className="block text-slate-400 font-semibold mb-1">Location *</label>
@@ -334,7 +333,7 @@ export const AssetDirectory: React.FC = () => {
                     required
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
                     placeholder="e.g. HQ - Room 302"
                   />
                 </div>
@@ -349,18 +348,16 @@ export const AssetDirectory: React.FC = () => {
                     required
                     value={acquisitionCost}
                     onChange={(e) => setAcquisitionCost(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand"
                     placeholder="e.g. 1999.00"
                   />
                 </div>
                 <div>
                   <label className="block text-slate-400 font-semibold mb-1">Acquisition Date *</label>
-                  <input
-                    type="date"
-                    required
+                  <DatePicker
                     value={acquisitionDate}
-                    onChange={(e) => setAcquisitionDate(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white"
+                    onChange={(val) => setAcquisitionDate(val)}
+                    placeholder="Select acquisition date"
                   />
                 </div>
               </div>
@@ -368,16 +365,16 @@ export const AssetDirectory: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-slate-400 font-semibold mb-1">Condition *</label>
-                  <select
+                  <Dropdown
                     value={condition}
-                    onChange={(e) => setCondition(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white"
-                  >
-                    <option value="New">New</option>
-                    <option value="Good">Good</option>
-                    <option value="Fair">Fair</option>
-                    <option value="Poor">Poor</option>
-                  </select>
+                    onChange={(val) => setCondition(val)}
+                    options={[
+                      { value: 'New', label: 'New' },
+                      { value: 'Good', label: 'Good' },
+                      { value: 'Fair', label: 'Fair' },
+                      { value: 'Poor', label: 'Poor' }
+                    ]}
+                  />
                 </div>
                 <div className="flex items-center space-x-2 pt-6">
                   <input

@@ -16,7 +16,8 @@ interface AuthState {
   loading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<boolean>;
-  signup: (name: string, email: string, password: string) => Promise<boolean>;
+  signup: (name: string, email: string, password: string) => Promise<string | null>;
+  verifyEmail: (email: string, code: string) => Promise<boolean>;
   forgotPassword: (email: string, newPassword: string) => Promise<boolean>;
   logout: () => void;
   checkAuth: () => Promise<void>;
@@ -49,12 +50,25 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ loading: true, error: null });
     try {
       const response = await api.post('/auth/signup', { name, email, password });
+      set({ loading: false });
+      return response.data.data.code;
+    } catch (err: any) {
+      const message = err.response?.data?.message || 'Signup failed.';
+      set({ error: message, loading: false });
+      return null;
+    }
+  },
+
+  verifyEmail: async (email, code) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await api.post('/auth/verify-email', { email, code });
       const { token, user } = response.data.data;
       localStorage.setItem('token', token);
       set({ user, token, isAuthenticated: true, loading: false });
       return true;
     } catch (err: any) {
-      const message = err.response?.data?.message || 'Signup failed.';
+      const message = err.response?.data?.message || 'Verification failed.';
       set({ error: message, loading: false });
       return false;
     }

@@ -49,6 +49,11 @@ export const OrgSetup: React.FC = () => {
   const [customFieldType, setCustomFieldType] = useState('string');
   const [fieldsList, setFieldsList] = useState<{name: string, type: string, required: boolean}[]>([]);
 
+  // Inline category schema adding
+  const [addingFieldCatId, setAddingFieldCatId] = useState<string | null>(null);
+  const [newFieldName, setNewFieldName] = useState('');
+  const [newFieldType, setNewFieldType] = useState('string');
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -114,6 +119,24 @@ export const OrgSetup: React.FC = () => {
     setCustomFieldName('');
   };
 
+  const handleAddInlineField = async (cat: Category) => {
+    if (!newFieldName) return;
+    const updatedFields = [...(cat.customFields as any[] || []), { name: newFieldName, type: newFieldType, required: true }];
+    try {
+      await api.put(`/org/categories/${cat.id}`, {
+        name: cat.name,
+        customFields: updatedFields
+      });
+      setAddingFieldCatId(null);
+      setNewFieldName('');
+      setNewFieldType('string');
+      setMessage('Category schema updated successfully!');
+      fetchData();
+    } catch (err: any) {
+      setMessage(err.response?.data?.message || 'Failed to update category schema');
+    }
+  };
+
   const handlePromoteRole = async (employeeId: string, newRole: string) => {
     try {
       await api.put(`/org/employees/${employeeId}/role`, { role: newRole });
@@ -155,9 +178,9 @@ export const OrgSetup: React.FC = () => {
       </div>
 
       {message && (
-        <div className="bg-brand-900/20 border border-brand-500/30 text-brand-300 p-4 rounded-xl text-xs flex justify-between items-center">
+        <div className="bg-purple-50 border border-purple-200 text-purple-800 p-4 rounded-xl text-xs flex justify-between items-center">
           <span>{message}</span>
-          <button onClick={() => setMessage('')} className="font-semibold hover:text-white">&times;</button>
+          <button onClick={() => setMessage('')} className="font-semibold text-purple-500 hover:text-purple-800">&times;</button>
         </div>
       )}
 
@@ -360,7 +383,7 @@ export const OrgSetup: React.FC = () => {
                   required
                   value={catName}
                   onChange={(e) => setCatName(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-brand"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand"
                   placeholder="e.g. Vehicles, Testing Gear"
                 />
               </div>
@@ -372,7 +395,7 @@ export const OrgSetup: React.FC = () => {
                     type="text"
                     value={customFieldName}
                     onChange={(e) => setCustomFieldName(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-brand"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-1 focus:ring-brand"
                     placeholder="Field name (e.g. horsepower)"
                   />
                   <div className="flex gap-2">
@@ -430,17 +453,72 @@ export const OrgSetup: React.FC = () => {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {categories.map((cat) => (
-                  <div key={cat.id} className="bg-slate-950 border border-slate-800 p-4 rounded-xl text-xs space-y-2">
-                    <span className="font-bold text-white text-sm block">{cat.name}</span>
-                    <span className="text-[10px] text-slate-500 block">Schema fields:</span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {(cat.customFields as any[] || []).map((f, i) => (
-                        <span key={i} className="bg-slate-900 border border-slate-850 px-2 py-0.5 rounded text-slate-400">
-                          {f.name}: {f.type}
-                        </span>
-                      ))}
-                      {(!cat.customFields || (cat.customFields as any[]).length === 0) && (
-                        <span className="text-slate-500 italic">No custom attributes.</span>
+                  <div key={cat.id} className="bg-slate-950 border border-slate-800 p-4 rounded-xl text-xs space-y-2.5 flex flex-col justify-between">
+                    <div className="space-y-2">
+                      <span className="font-bold text-white text-sm block">{cat.name}</span>
+                      <span className="text-[10px] text-slate-500 block font-semibold">Schema fields:</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {(cat.customFields as any[] || []).map((f, i) => (
+                          <span key={i} className="bg-slate-900 border border-slate-850 px-2 py-0.5 rounded text-slate-400 font-bold">
+                            {f.name}: {f.type}
+                          </span>
+                        ))}
+                        {(!cat.customFields || (cat.customFields as any[]).length === 0) && (
+                          <span className="text-slate-500 italic">No custom attributes.</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Add Field Inline Form */}
+                    <div className="pt-3 border-t border-slate-800/60 mt-1">
+                      {addingFieldCatId === cat.id ? (
+                        <div className="space-y-2">
+                          <input
+                            type="text"
+                            value={newFieldName}
+                            onChange={(e) => setNewFieldName(e.target.value)}
+                            className="w-full bg-white border border-slate-300 rounded-lg px-2 py-1 text-[10px] text-slate-800 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                            placeholder="New field name..."
+                            autoFocus
+                          />
+                          <div className="flex gap-1.5 items-center">
+                            <select
+                              value={newFieldType}
+                              onChange={(e) => setNewFieldType(e.target.value)}
+                              className="bg-white border border-slate-300 rounded-lg px-2 py-1 text-[10px] text-slate-800 flex-1 inline-select"
+                            >
+                              <option value="string">String</option>
+                              <option value="number">Number</option>
+                              <option value="boolean">Boolean</option>
+                            </select>
+                            <button
+                              type="button"
+                              onClick={() => handleAddInlineField(cat)}
+                              className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-3 h-7 rounded-lg text-[10px]"
+                            >
+                              Add
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setAddingFieldCatId(null)}
+                              className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-2 h-7 rounded-lg text-[10px] border border-slate-200"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAddingFieldCatId(cat.id);
+                            setNewFieldName('');
+                            setNewFieldType('string');
+                          }}
+                          className="text-[10px] font-bold text-purple-600 hover:text-purple-700 flex items-center space-x-1"
+                        >
+                          <span>+ Add Field</span>
+                        </button>
                       )}
                     </div>
                   </div>
@@ -476,40 +554,44 @@ export const OrgSetup: React.FC = () => {
                     <td className="py-4 text-slate-400">{emp.email}</td>
                     <td className="py-4">{emp.department?.name || <span className="text-slate-500">Unassigned</span>}</td>
                     <td className="py-4">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                        emp.role === 'ADMIN' ? 'bg-red-500/10 text-red-400 border border-red-800/20' :
-                        emp.role === 'ASSET_MANAGER' ? 'bg-brand-500/10 text-brand-400 border border-brand-800/20' :
-                        emp.role === 'DEPARTMENT_HEAD' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-800/20' :
-                        'bg-slate-850 text-slate-400'
-                      }`}>
+                      <span 
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
+                          emp.role === 'ADMIN' ? 'bg-red-50 text-red-700 border-red-200' :
+                          emp.role === 'ASSET_MANAGER' ? 'bg-purple-50 text-purple-700 border-purple-200' :
+                          emp.role === 'DEPARTMENT_HEAD' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+                          ''
+                        }`}
+                        style={emp.role === 'EMPLOYEE' ? { backgroundColor: '#f1f5f9', color: '#1e293b', borderColor: '#cbd5e1' } : {}}
+                      >
                         {emp.role}
                       </span>
                     </td>
-                    <td className="py-4 text-right space-x-2">
+                    <td className="py-4 text-right">
                       {emp.id !== currentUser.id && (
-                        <>
-                          <select
+                        <div className="inline-flex items-center justify-end gap-2">
+                          <Dropdown
                             value={emp.role}
-                            onChange={(e) => handlePromoteRole(emp.id, e.target.value)}
-                            className="bg-slate-900 border border-slate-700 text-slate-100 text-[11px] font-semibold rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand cursor-pointer shadow-sm hover:border-slate-600 transition-all"
-                          >
-                            <option value="EMPLOYEE">Make Employee</option>
-                            <option value="ASSET_MANAGER">Make Asset Manager</option>
-                            <option value="DEPARTMENT_HEAD">Make Dept Head</option>
-                            <option value="ADMIN">Make Admin</option>
-                          </select>
+                            onChange={(val) => handlePromoteRole(emp.id, val)}
+                            options={[
+                              { value: 'EMPLOYEE', label: 'Make Employee' },
+                              { value: 'ASSET_MANAGER', label: 'Make Asset Manager' },
+                              { value: 'DEPARTMENT_HEAD', label: 'Make Dept Head' },
+                              { value: 'ADMIN', label: 'Make Admin' },
+                            ]}
+                            className="w-44 text-left"
+                          />
 
                           <button
                             onClick={() => handleToggleUserStatus(emp.id, emp.status)}
-                            className={`px-3 py-1 rounded text-[10px] font-semibold transition-all ${
+                            className={`px-3.5 py-2.5 rounded-xl text-[10px] font-bold transition-all shrink-0 border ${
                               emp.status === 'ACTIVE' 
-                                ? 'bg-red-950/40 hover:bg-red-950 text-red-400 border border-red-900/30' 
-                                : 'bg-emerald-950/40 hover:bg-emerald-950 text-emerald-400 border border-emerald-900/30'
+                                ? 'bg-red-50 hover:bg-red-100 text-red-700 border-red-200' 
+                                : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200'
                             }`}
                           >
                             {emp.status === 'ACTIVE' ? 'Deactivate' : 'Activate'}
                           </button>
-                        </>
+                        </div>
                       )}
                     </td>
                   </tr>

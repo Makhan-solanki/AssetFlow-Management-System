@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { CalendarRange, ShieldAlert, Clock, User, CheckCircle2 } from 'lucide-react';
 import { Dropdown } from '../components/Dropdown';
+import { DatePicker } from '../components/DatePicker';
+import { TimePicker } from '../components/TimePicker';
 
 interface BookableAsset {
   id: string;
@@ -129,14 +131,14 @@ export const ResourceBooking: React.FC = () => {
       </div>
 
       {message && (
-        <div className="bg-brand-900/20 border border-brand-500/30 text-brand-300 p-4 rounded-xl text-xs flex justify-between items-center">
+        <div className="bg-purple-50 border border-purple-200 text-purple-800 p-4 rounded-xl text-xs flex justify-between items-center">
           <span>{message}</span>
-          <button onClick={() => setMessage('')} className="font-bold hover:text-white">&times;</button>
+          <button onClick={() => setMessage('')} className="font-bold text-purple-500 hover:text-purple-800">&times;</button>
         </div>
       )}
 
       {/* Resource selector bar */}
-      <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col sm:flex-row items-center gap-4 text-xs">
+      <div className="relative z-30 bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col sm:flex-row items-center gap-4 text-xs">
         <div className="w-full sm:w-1/2">
           <Dropdown
             label="Select Shared Resource"
@@ -153,12 +155,10 @@ export const ResourceBooking: React.FC = () => {
           />
         </div>
         <div className="w-full sm:w-1/2">
-          <label className="block text-slate-400 font-semibold mb-1">Booking Date</label>
-          <input
-            type="date"
+          <DatePicker
+            label="Booking Date"
             value={selectedAssetDate}
-            onChange={(e) => setSelectedAssetDate(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none"
+            onChange={(val) => setSelectedAssetDate(val)}
           />
         </div>
       </div>
@@ -170,10 +170,9 @@ export const ResourceBooking: React.FC = () => {
             Availability Schedule: {currentAsset?.name || 'Resource'} ({selectedAssetDate})
           </h3>
 
-          <div className="relative pl-12 border-l border-slate-800 space-y-8 py-2 text-xs">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {/* Timeline hour marks */}
             {['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'].map((time) => {
-              // Check if there is an active booking during this slot hour
               const activeBookingInSlot = filteredBookings.find((b) => {
                 const bStartHour = new Date(b.startTime).toTimeString().substring(0, 5);
                 const bEndHour = new Date(b.endTime).toTimeString().substring(0, 5);
@@ -181,33 +180,44 @@ export const ResourceBooking: React.FC = () => {
               });
 
               return (
-                <div key={time} className="relative">
-                  {/* Timeline bullet */}
-                  <div className="absolute -left-[53px] top-1 text-slate-500 font-semibold font-mono w-10 text-right">{time}</div>
-                  <div className="absolute -left-[5px] top-2 w-2.5 h-2.5 rounded-full bg-slate-800 border-2 border-slate-900" />
-                  
+                <div key={time}>
                   {activeBookingInSlot ? (
-                    <div className="bg-brand/10 border-l-4 border-brand text-brand-300 p-4 rounded-xl shadow-sm">
-                      <span className="font-bold text-white block">Booked - {activeBookingInSlot.user?.name || 'Team'}</span>
-                      <span className="text-[10px] text-slate-400 mt-1 block">
-                        Slot: {new Date(activeBookingInSlot.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - {new Date(activeBookingInSlot.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                      </span>
+                    <div className="bg-slate-950 border border-slate-800/80 p-3 rounded-xl text-center transition-all opacity-80 flex flex-col justify-between h-20">
+                      <div>
+                        <span className="font-bold text-slate-300 block text-xs">{time}</span>
+                        <span className="text-[9px] text-slate-500 truncate block mt-0.5 font-medium">{activeBookingInSlot.user?.name}</span>
+                      </div>
+                      <div>
+                        <span className="inline-block px-1.5 py-0.5 rounded text-[8px] font-bold bg-purple-500/10 text-purple-400 border border-purple-800/20 uppercase tracking-wider">
+                          Booked
+                        </span>
+                      </div>
                     </div>
                   ) : (
-                    <div className="text-slate-500 italic py-2">Slot available</div>
+                    <div className="bg-emerald-500/5 border border-emerald-500/10 hover:border-emerald-500/20 p-3 rounded-xl text-center transition-all hover:-translate-y-0.5 flex flex-col justify-between h-20">
+                      <div>
+                        <span className="font-bold text-white block text-xs">{time}</span>
+                        <span className="text-[9px] text-slate-400 block mt-0.5 font-medium">Available</span>
+                      </div>
+                      <div>
+                        <span className="inline-block px-1.5 py-0.5 rounded text-[8px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
+                          Open
+                        </span>
+                      </div>
+                    </div>
                   )}
                 </div>
               );
             })}
-
-            {/* Dotted/Dashed Conflict Overlay from Screen 6 when overlap state is present */}
-            {overlapError && (
-              <div className="bg-red-950/20 border-2 border-dashed border-red-800 text-red-300 p-4 rounded-xl shadow-lg relative">
-                <span className="font-bold block">Conflict - Slot is unavailable</span>
-                <span className="text-[10px] text-red-400/80 mt-1 block">{overlapError.message}</span>
-              </div>
-            )}
           </div>
+
+          {/* Dotted/Dashed Conflict Overlay from Screen 6 when overlap state is present */}
+          {overlapError && (
+            <div className="bg-red-950/20 border-2 border-dashed border-red-800 text-red-300 p-4 rounded-xl shadow-lg relative">
+              <span className="font-bold block">Conflict - Slot is unavailable</span>
+              <span className="text-[10px] text-red-400/80 mt-1 block">{overlapError.message}</span>
+            </div>
+          )}
         </div>
 
         {/* Booking slot Form */}
@@ -220,24 +230,18 @@ export const ResourceBooking: React.FC = () => {
           <form onSubmit={handleBook} className="space-y-4 text-xs">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Start Time *</label>
-                <input
-                  type="time"
-                  required
+                <TimePicker
+                  label="Start Time *"
                   value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none"
+                  onChange={(val) => setStartTime(val)}
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">End Time *</label>
-                <input
-                  type="time"
-                  required
+                <TimePicker
+                  label="End Time *"
                   value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none"
+                  onChange={(val) => setEndTime(val)}
                 />
               </div>
             </div>

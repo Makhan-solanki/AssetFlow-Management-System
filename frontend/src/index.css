@@ -69,6 +69,12 @@ input[type="time"]:focus {
   box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.15) !important;
 }
 
+select.inline-select {
+  padding: 2px 6px !important;
+  height: 28px !important;
+  font-size: 10px !important;
+}
+
 /* 
   Prevent text-white blending into white card/page backgrounds.
   Translates text-white to natural charcoal (#1e293b) except when inside buttons,
@@ -77,3 +83,48 @@ input[type="time"]:focus {
 .text-white:not(button):not(button *):not(a):not(a *):not(.bg-brand *):not(.bg-red-650 *):not(.bg-red-600 *):not(.bg-emerald-600 *):not(.bg-red-950 *):not(.bg-emerald-950 *):not(.bg-amber-500 *) {
   color: #1e293b !important;
 }
+
+/* 
+  Darken all grey text utilities in the main dashboard workspace 
+  to solid black to ensure maximum readability and contrast.
+*/
+main .text-slate-100,
+main .text-slate-200,
+main .text-slate-300,
+main .text-slate-400,
+main .text-slate-500,
+main .text-slate-600,
+main .text-slate-700,
+main .text-gray-100,
+main .text-gray-200,
+main .text-gray-300,
+main .text-gray-400,
+main .text-gray-500,
+main .text-gray-600,
+main .text-gray-700 {
+  color: #000000 !important;
+}
+
+/* Force text inside light-purple list cards to be black for visibility */
+.bg-purple-50,
+.bg-purple-50 span,
+.bg-purple-50 div {
+  color: #000000 !important;
+}
+
+/* 
+  Ultimate global override: Force all dashboard text elements (spans, table cells, 
+  paragraphs, labels) to solid black to guarantee maximum contrast and legibility,
+  except for active badge states, links, and buttons.
+*/
+main span:not(button *):not(a *):not(.bg-brand *):not(.text-emerald-700):not(.text-red-700):not(.text-yellow-700):not(.text-white),
+main td:not(button *):not(a *):not(.bg-brand *):not(.text-emerald-700):not(.text-red-700):not(.text-yellow-700):not(.text-white),
+main th:not(button *):not(a *),
+main p:not(button *):not(a *),
+main label:not(button *):not(a *),
+main div:not(.bg-brand):not(.bg-brand *):not(.bg-red-500):not(.bg-red-500 *):not(.bg-emerald-500):not(.bg-emerald-500 *):not(.bg-yellow-500):not(.bg-yellow-500 *):not(button *):not(a *):not(.text-white) {
+  color: #000000 !important;
+}
+
+
+

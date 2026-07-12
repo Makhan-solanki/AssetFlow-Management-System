@@ -137,7 +137,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onQuickAction }) => {
               <div className="w-10 h-10 rounded-lg bg-brand/10 text-brand flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
                 <Plus className="w-5 h-5" />
               </div>
-              <span className="text-sm font-semibold text-white">Register Asset</span>
+              <span className="text-sm font-bold text-purple-600">Register Asset</span>
               <span className="text-[10px] text-slate-500 mt-1">Add AF-XXXX tag item</span>
             </button>
 
@@ -148,7 +148,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onQuickAction }) => {
               <div className="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
                 <CalendarRange className="w-5 h-5" />
               </div>
-              <span className="text-sm font-semibold text-white">Book Resource</span>
+              <span className="text-sm font-bold text-purple-600">Book Resource</span>
               <span className="text-[10px] text-slate-500 mt-1">Schedule conference room</span>
             </button>
 
@@ -159,7 +159,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onQuickAction }) => {
               <div className="w-10 h-10 rounded-lg bg-yellow-500/10 text-yellow-500 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
                 <Wrench className="w-5 h-5" />
               </div>
-              <span className="text-sm font-semibold text-white">Raise Repair</span>
+              <span className="text-sm font-bold text-purple-600">Raise Repair</span>
               <span className="text-[10px] text-slate-500 mt-1">Report faulty equipment</span>
             </button>
           </div>

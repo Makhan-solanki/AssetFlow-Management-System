@@ -34,12 +34,39 @@ function App() {
   const [activeMenu, setActiveMenu] = useState('dashboard');
   const [signUpMode, setSignUpMode] = useState(false);
 
+  const getMenuFromHash = () => {
+    const hash = window.location.hash;
+    if (!hash) return 'dashboard';
+    const path = hash.split('?')[0].replace('#/', '');
+    return path || 'dashboard';
+  };
+
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
+  useEffect(() => {
+    const handleHashChange = () => {
+      setActiveMenu(getMenuFromHash());
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    
+    if (isAuthenticated) {
+      if (!window.location.hash) {
+        window.location.hash = '#/dashboard';
+      } else {
+        setActiveMenu(getMenuFromHash());
+      }
+    }
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [isAuthenticated]);
+
+  const handleMenuChange = (menu: string) => {
+    window.location.hash = `#/${menu}`;
+  };
+
   const handleQuickAction = (action: string) => {
-    setActiveMenu(action);
+    handleMenuChange(action);
   };
 
   if (!isAuthenticated) {
@@ -79,7 +106,7 @@ function App() {
           {/* Navigation Links */}
           <nav className="p-4 space-y-1.5 text-xs">
             <button
-              onClick={() => setActiveMenu('dashboard')}
+              onClick={() => handleMenuChange('dashboard')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-semibold transition-all ${
                 activeMenu === 'dashboard' ? 'bg-brand text-white shadow-lg shadow-brand/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-850'
               }`}
@@ -90,7 +117,7 @@ function App() {
 
             {user?.role === 'ADMIN' && (
               <button
-                onClick={() => setActiveMenu('setup')}
+                onClick={() => handleMenuChange('setup')}
                 className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-semibold transition-all ${
                   activeMenu === 'setup' ? 'bg-brand text-white shadow-lg shadow-brand/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-850'
                 }`}
@@ -101,7 +128,7 @@ function App() {
             )}
 
             <button
-              onClick={() => setActiveMenu('assets')}
+              onClick={() => handleMenuChange('assets')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-semibold transition-all ${
                 activeMenu === 'assets' ? 'bg-brand text-white shadow-lg shadow-brand/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-850'
               }`}
@@ -111,7 +138,7 @@ function App() {
             </button>
 
             <button
-              onClick={() => setActiveMenu('allocations')}
+              onClick={() => handleMenuChange('allocations')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-semibold transition-all ${
                 activeMenu === 'allocations' ? 'bg-brand text-white shadow-lg shadow-brand/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-850'
               }`}
@@ -121,7 +148,7 @@ function App() {
             </button>
 
             <button
-              onClick={() => setActiveMenu('bookings')}
+              onClick={() => handleMenuChange('bookings')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-semibold transition-all ${
                 activeMenu === 'bookings' ? 'bg-brand text-white shadow-lg shadow-brand/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-850'
               }`}
@@ -131,7 +158,7 @@ function App() {
             </button>
 
             <button
-              onClick={() => setActiveMenu('maintenance')}
+              onClick={() => handleMenuChange('maintenance')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-semibold transition-all ${
                 activeMenu === 'maintenance' ? 'bg-brand text-white shadow-lg shadow-brand/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-850'
               }`}
@@ -141,7 +168,7 @@ function App() {
             </button>
 
             <button
-              onClick={() => setActiveMenu('audit')}
+              onClick={() => handleMenuChange('audit')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-semibold transition-all ${
                 activeMenu === 'audit' ? 'bg-brand text-white shadow-lg shadow-brand/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-850'
               }`}
@@ -151,7 +178,7 @@ function App() {
             </button>
 
             <button
-              onClick={() => setActiveMenu('reports')}
+              onClick={() => handleMenuChange('reports')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-semibold transition-all ${
                 activeMenu === 'reports' ? 'bg-brand text-white shadow-lg shadow-brand/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-850'
               }`}
@@ -161,7 +188,7 @@ function App() {
             </button>
 
             <button
-              onClick={() => setActiveMenu('notifications')}
+              onClick={() => handleMenuChange('notifications')}
               className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-semibold transition-all ${
                 activeMenu === 'notifications' ? 'bg-brand text-white shadow-lg shadow-brand/20' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-850'
               }`}

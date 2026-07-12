@@ -1,4 +1,6 @@
+import React, { useState } from 'react';
 import { Dropdown } from './Dropdown';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> {
   label: string;
@@ -21,6 +23,7 @@ export const InputField: React.FC<InputFieldProps> = ({
   children,
   ...props
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
   const inputId = id || label.toLowerCase().replace(/\s+/g, '-');
   const inputBaseStyles = 'appearance-none block w-full px-3.5 py-3 border border-slate-800 rounded-xl shadow-sm placeholder-slate-500 bg-slate-950 text-white focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand text-xs transition-all';
   
@@ -67,6 +70,22 @@ export const InputField: React.FC<InputFieldProps> = ({
           <label htmlFor={inputId} className="text-xs font-semibold text-slate-300 select-none cursor-pointer">
             {label}
           </label>
+        </div>
+      ) : type === 'password' ? (
+        <div className="relative">
+          <input
+            id={inputId}
+            type={showPassword ? 'text' : 'password'}
+            className={`${inputBaseStyles} pr-10 ${className}`}
+            {...(props as React.InputHTMLAttributes<HTMLInputElement>)}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-200 transition-colors"
+          >
+            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
         </div>
       ) : (
         <input

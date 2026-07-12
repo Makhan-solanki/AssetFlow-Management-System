@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuthStore } from '../store/useAuthStore';
 import { Laptop, ClipboardCheck, ArrowRightLeft, ShieldAlert, Check, UserCheck } from 'lucide-react';
+import { Dropdown } from '../components/Dropdown';
+import { DatePicker } from '../components/DatePicker';
 
 interface Asset {
   id: string;
@@ -185,9 +187,9 @@ export const AssetAllocation: React.FC = () => {
       </div>
 
       {message && (
-        <div className="bg-brand-900/20 border border-brand-500/30 text-brand-300 p-4 rounded-xl text-xs flex justify-between items-center">
+        <div className="bg-purple-50 border border-purple-200 text-purple-800 p-4 rounded-xl text-xs flex justify-between items-center">
           <span>{message}</span>
-          <button onClick={() => setMessage('')} className="font-bold hover:text-white">&times;</button>
+          <button onClick={() => setMessage('')} className="font-bold text-purple-500 hover:text-purple-800">&times;</button>
         </div>
       )}
 
@@ -237,52 +239,47 @@ export const AssetAllocation: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-slate-400 font-semibold mb-1">Select Asset *</label>
-                    <select
-                      required
+                    <Dropdown
                       value={selectedAssetId}
-                      onChange={(e) => {
-                        setSelectedAssetId(e.target.value);
+                      onChange={(val) => {
+                        setSelectedAssetId(val);
                         setConflictError(null);
                       }}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none"
-                    >
-                      <option value="">Select Asset...</option>
-                      {assets.map((asset) => (
-                        <option key={asset.id} value={asset.id}>
-                          {asset.name} ({asset.assetTag}) — {asset.status}
-                        </option>
-                      ))}
-                    </select>
+                      options={[
+                        { value: '', label: 'Select Asset...' },
+                        ...assets.map((asset) => ({
+                          value: asset.id,
+                          label: `${asset.name} (${asset.assetTag}) — ${asset.status}`
+                        }))
+                      ]}
+                    />
                   </div>
 
                   <div>
                     <label className="block text-slate-400 font-semibold mb-1">Allocate To Employee *</label>
-                    <select
-                      required
+                    <Dropdown
                       value={selectedUserId}
-                      onChange={(e) => {
-                        setSelectedUserId(e.target.value);
+                      onChange={(val) => {
+                        setSelectedUserId(val);
                         setConflictError(null);
                       }}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none"
-                    >
-                      <option value="">Select Employee...</option>
-                      {employees.map((emp) => (
-                        <option key={emp.id} value={emp.id}>
-                          {emp.name} ({emp.email})
-                        </option>
-                      ))}
-                    </select>
+                      options={[
+                        { value: '', label: 'Select Employee...' },
+                        ...employees.map((emp) => ({
+                          value: emp.id,
+                          label: `${emp.name} (${emp.email})`
+                        }))
+                      ]}
+                    />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-slate-400 font-semibold mb-1">Expected Return Date</label>
-                  <input
-                    type="date"
+                  <DatePicker
                     value={expectedReturnDate}
-                    onChange={(e) => setExpectedReturnDate(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none"
+                    onChange={(val) => setExpectedReturnDate(val)}
+                    placeholder="Select expected return date"
                   />
                 </div>
 
@@ -383,7 +380,7 @@ export const AssetAllocation: React.FC = () => {
                         {alloc.status === 'ALLOCATED' && isPrivileged && (
                           <button
                             onClick={() => setShowReturnModal(alloc)}
-                            className="bg-slate-850 hover:bg-slate-800 border border-slate-800 text-[10px] font-semibold text-white px-3 py-1.5 rounded-lg transition-all"
+                            className="bg-purple-50 hover:bg-purple-100 border border-purple-100 text-[10px] font-bold text-purple-700 px-3 py-1.5 rounded-lg transition-all shadow-sm"
                           >
                             Mark Returned
                           </button>
@@ -494,16 +491,16 @@ export const AssetAllocation: React.FC = () => {
             <form onSubmit={handleReturnSubmit} className="p-6 space-y-4 text-xs">
               <div>
                 <label className="block text-slate-400 font-semibold mb-1">Return Inspection Condition</label>
-                <select
+                <Dropdown
                   value={returnCondition}
-                  onChange={(e) => setReturnCondition(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white"
-                >
-                  <option value="New">New</option>
-                  <option value="Good">Good</option>
-                  <option value="Fair">Fair</option>
-                  <option value="Poor">Poor</option>
-                </select>
+                  onChange={(val) => setReturnCondition(val)}
+                  options={[
+                    { value: 'New', label: 'New' },
+                    { value: 'Good', label: 'Good' },
+                    { value: 'Fair', label: 'Fair' },
+                    { value: 'Poor', label: 'Poor' }
+                  ]}
+                />
               </div>
 
               <div>

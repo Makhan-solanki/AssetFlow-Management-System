@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuthStore } from '../store/useAuthStore';
 import { Wrench, ArrowRight, UserPlus, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Dropdown } from '../components/Dropdown';
 
 interface Asset {
   id: string;
@@ -123,9 +124,9 @@ export const Maintenance: React.FC = () => {
       </div>
 
       {message && (
-        <div className="bg-brand-900/20 border border-brand-500/30 text-brand-300 p-4 rounded-xl text-xs flex justify-between items-center">
+        <div className="bg-purple-50 border border-purple-200 text-purple-800 p-4 rounded-xl text-xs flex justify-between items-center">
           <span>{message}</span>
-          <button onClick={() => setMessage('')} className="font-bold hover:text-white">&times;</button>
+          <button onClick={() => setMessage('')} className="font-bold text-purple-500 hover:text-purple-800">&times;</button>
         </div>
       )}
 
@@ -244,30 +245,30 @@ export const Maintenance: React.FC = () => {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-slate-400 font-semibold mb-1">Select Asset *</label>
-              <select
-                required
+              <Dropdown
                 value={selectedAssetId}
-                onChange={(e) => setSelectedAssetId(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white"
-              >
-                <option value="">Select Asset...</option>
-                {assets.map((asset) => (
-                  <option key={asset.id} value={asset.id}>{asset.name} ({asset.assetTag})</option>
-                ))}
-              </select>
+                onChange={(val) => setSelectedAssetId(val)}
+                options={[
+                  { value: '', label: 'Select Asset...' },
+                  ...assets.map((asset) => ({
+                    value: asset.id,
+                    label: `${asset.name} (${asset.assetTag})`
+                  }))
+                ]}
+              />
             </div>
             <div>
               <label className="block text-slate-400 font-semibold mb-1">Severity *</label>
-              <select
+              <Dropdown
                 value={priority}
-                onChange={(e) => setPriority(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white"
-              >
-                <option value="Low">Low Severity</option>
-                <option value="Medium">Medium Severity</option>
-                <option value="High">High Severity</option>
-                <option value="Critical">Critical Severity</option>
-              </select>
+                onChange={(val) => setPriority(val)}
+                options={[
+                  { value: 'Low', label: 'Low Severity' },
+                  { value: 'Medium', label: 'Medium Severity' },
+                  { value: 'High', label: 'High Severity' },
+                  { value: 'Critical', label: 'Critical Severity' }
+                ]}
+              />
             </div>
           </div>
           <div>
