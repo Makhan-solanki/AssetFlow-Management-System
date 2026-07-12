@@ -16,4 +16,4 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 EXPOSE 5000
-CMD ["npm", "run", "start"]
+CMD ["sh", "-c", "npx prisma db push && npm run start"]
