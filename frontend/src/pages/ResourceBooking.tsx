@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { CalendarRange, ShieldAlert, Clock, User, CheckCircle2 } from 'lucide-react';
+import { Dropdown } from '../components/Dropdown';
 
 interface BookableAsset {
   id: string;
@@ -137,21 +138,19 @@ export const ResourceBooking: React.FC = () => {
       {/* Resource selector bar */}
       <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col sm:flex-row items-center gap-4 text-xs">
         <div className="w-full sm:w-1/2">
-          <label className="block text-slate-400 font-semibold mb-1">Select Shared Resource</label>
-          <select
+          <Dropdown
+            label="Select Shared Resource"
             value={selectedAssetId}
-            onChange={(e) => {
-              setSelectedAssetId(e.target.value);
+            onChange={(val) => {
+              setSelectedAssetId(val);
               setOverlapError(null);
             }}
-            className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none"
-          >
-            {bookableAssets.map((asset) => (
-              <option key={asset.id} value={asset.id}>
-                {asset.name} ({asset.assetTag}) — {asset.location}
-              </option>
-            ))}
-          </select>
+            options={bookableAssets.map((asset) => ({
+              value: asset.id,
+              label: `${asset.name} (${asset.assetTag}) — ${asset.location}`,
+            }))}
+            placeholder="Select Resource..."
+          />
         </div>
         <div className="w-full sm:w-1/2">
           <label className="block text-slate-400 font-semibold mb-1">Booking Date</label>

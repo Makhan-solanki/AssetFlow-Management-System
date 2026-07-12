@@ -45,6 +45,30 @@ input:focus, select:focus, textarea:focus {
   --tw-ring-color: #a855f7 !important;
 }
 
+/* Style all select boxes and date/time pickers globally for custom UI */
+select, 
+input[type="date"], 
+input[type="datetime-local"], 
+input[type="time"] {
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 0.75rem !important; /* rounded-xl */
+  padding: 0.625rem 0.875rem !important;
+  color: #1e293b !important;
+  font-size: 0.75rem !important;
+  outline: none !important;
+  cursor: pointer !important;
+  transition: all 150ms ease-in-out !important;
+}
+
+select:focus, 
+input[type="date"]:focus, 
+input[type="datetime-local"]:focus, 
+input[type="time"]:focus {
+  border-color: #a855f7 !important;
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.15) !important;
+}
+
 /* 
   Prevent text-white blending into white card/page backgrounds.
   Translates text-white to natural charcoal (#1e293b) except when inside buttons,

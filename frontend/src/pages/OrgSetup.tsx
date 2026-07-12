@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuthStore } from '../store/useAuthStore';
-import { Layers, ShieldAlert, Check, UserPlus, FolderPlus, Grid } from 'lucide-react';
+import { Layers, ShieldAlert, Check, UserPlus, FolderPlus, Grid, ChevronDown } from 'lucide-react';
+import { Dropdown } from '../components/Dropdown';
 
 interface Employee {
   id: string;
@@ -39,6 +40,9 @@ export const OrgSetup: React.FC = () => {
   const [deptName, setDeptName] = useState('');
   const [deptHeadId, setDeptHeadId] = useState('');
   const [deptParentId, setDeptParentId] = useState('');
+
+  const [isHeadDropdownOpen, setIsHeadDropdownOpen] = useState(false);
+  const [isParentDropdownOpen, setIsParentDropdownOpen] = useState(false);
 
   const [catName, setCatName] = useState('');
   const [customFieldName, setCustomFieldName] = useState('');
@@ -209,30 +213,86 @@ export const OrgSetup: React.FC = () => {
 
               <div>
                 <label className="block text-slate-400 font-semibold mb-1">Department Head (Optional)</label>
-                <select
-                  value={deptHeadId}
-                  onChange={(e) => setDeptHeadId(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-brand"
-                >
-                  <option value="">Select Head...</option>
-                  {employees.map((emp) => (
-                    <option key={emp.id} value={emp.id}>{emp.name} ({emp.email})</option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsHeadDropdownOpen(!isHeadDropdownOpen);
+                      setIsParentDropdownOpen(false);
+                    }}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-100 flex items-center justify-between text-left font-semibold text-xs shadow-sm hover:border-slate-700 transition-all focus:outline-none focus:ring-1 focus:ring-brand"
+                  >
+                    <span>
+                      {deptHeadId 
+                        ? employees.find(e => e.id === deptHeadId)?.name || 'Select Head...' 
+                        : 'Select Head...'}
+                    </span>
+                    <ChevronDown className="w-4 h-4 text-slate-400" />
+                  </button>
+                  {isHeadDropdownOpen && (
+                    <div className="absolute z-20 left-0 right-0 mt-1 bg-slate-900 border border-slate-800 rounded-xl shadow-xl max-h-48 overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-100">
+                      <div 
+                        onClick={() => { setDeptHeadId(''); setIsHeadDropdownOpen(false); }}
+                        className="px-3.5 py-2 hover:bg-slate-850 cursor-pointer text-slate-400 font-semibold text-left"
+                      >
+                        Select Head...
+                      </div>
+                      {employees.map((emp) => (
+                        <div
+                          key={emp.id}
+                          onClick={() => { setDeptHeadId(emp.id); setIsHeadDropdownOpen(false); }}
+                          className={`px-3.5 py-2 hover:bg-slate-850 cursor-pointer transition-colors text-left ${
+                            deptHeadId === emp.id ? 'bg-purple-100/40 text-brand font-bold' : 'text-slate-100'
+                          }`}
+                        >
+                          {emp.name} ({emp.email})
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div>
                 <label className="block text-slate-400 font-semibold mb-1">Parent Department (Optional Hierarchy)</label>
-                <select
-                  value={deptParentId}
-                  onChange={(e) => setDeptParentId(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-brand"
-                >
-                  <option value="">None (Top Level)</option>
-                  {departments.map((d) => (
-                    <option key={d.id} value={d.id}>{d.name}</option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsParentDropdownOpen(!isParentDropdownOpen);
+                      setIsHeadDropdownOpen(false);
+                    }}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-slate-100 flex items-center justify-between text-left font-semibold text-xs shadow-sm hover:border-slate-700 transition-all focus:outline-none focus:ring-1 focus:ring-brand"
+                  >
+                    <span>
+                      {deptParentId 
+                        ? departments.find(d => d.id === deptParentId)?.name || 'None (Top Level)' 
+                        : 'None (Top Level)'}
+                    </span>
+                    <ChevronDown className="w-4 h-4 text-slate-400" />
+                  </button>
+                  {isParentDropdownOpen && (
+                    <div className="absolute z-20 left-0 right-0 mt-1 bg-slate-900 border border-slate-800 rounded-xl shadow-xl max-h-48 overflow-y-auto animate-in fade-in slide-in-from-top-1 duration-100">
+                      <div 
+                        onClick={() => { setDeptParentId(''); setIsParentDropdownOpen(false); }}
+                        className="px-3.5 py-2 hover:bg-slate-850 cursor-pointer text-slate-400 font-semibold text-left"
+                      >
+                        None (Top Level)
+                      </div>
+                      {departments.map((d) => (
+                        <div
+                          key={d.id}
+                          onClick={() => { setDeptParentId(d.id); setIsParentDropdownOpen(false); }}
+                          className={`px-3.5 py-2 hover:bg-slate-850 cursor-pointer transition-colors text-left ${
+                            deptParentId === d.id ? 'bg-purple-100/40 text-brand font-bold' : 'text-slate-100'
+                          }`}
+                        >
+                          {d.name}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <button
@@ -307,30 +367,33 @@ export const OrgSetup: React.FC = () => {
 
               <div className="border-t border-slate-850 pt-4 space-y-3">
                 <span className="font-semibold text-slate-300 block">Category Specific Fields</span>
-                <div className="flex gap-2">
+                <div className="space-y-2">
                   <input
                     type="text"
                     value={customFieldName}
                     onChange={(e) => setCustomFieldName(e.target.value)}
-                    className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-white focus:outline-none focus:ring-1 focus:ring-brand"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:ring-1 focus:ring-brand"
                     placeholder="Field name (e.g. horsepower)"
                   />
-                  <select
-                    value={customFieldType}
-                    onChange={(e) => setCustomFieldType(e.target.value)}
-                    className="bg-slate-950 border border-slate-800 rounded-xl px-2 py-1.5 text-white"
-                  >
-                    <option value="string">String</option>
-                    <option value="number">Number</option>
-                    <option value="boolean">Boolean</option>
-                  </select>
-                  <button
-                    type="button"
-                    onClick={handleAddField}
-                    className="bg-slate-850 hover:bg-slate-800 text-slate-300 px-3 py-1.5 rounded-xl border border-slate-850"
-                  >
-                    Add
-                  </button>
+                  <div className="flex gap-2">
+                    <Dropdown
+                      value={customFieldType}
+                      onChange={(val) => setCustomFieldType(val)}
+                      options={[
+                        { value: 'string', label: 'String' },
+                        { value: 'number', label: 'Number' },
+                        { value: 'boolean', label: 'Boolean' },
+                      ]}
+                      className="flex-1"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddField}
+                      className="bg-slate-850 hover:bg-slate-800 text-slate-300 px-5 py-2.5 rounded-xl border border-slate-850 font-semibold"
+                    >
+                      Add Field
+                    </button>
+                  </div>
                 </div>
                 {fieldsList.length > 0 && (
                   <div className="bg-slate-950 p-3 rounded-xl border border-slate-850 space-y-1.5">
@@ -428,7 +491,7 @@ export const OrgSetup: React.FC = () => {
                           <select
                             value={emp.role}
                             onChange={(e) => handlePromoteRole(emp.id, e.target.value)}
-                            className="bg-slate-950 border border-slate-800 text-[10px] rounded px-2 py-1 text-slate-300"
+                            className="bg-slate-900 border border-slate-700 text-slate-100 text-[11px] font-semibold rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand cursor-pointer shadow-sm hover:border-slate-600 transition-all"
                           >
                             <option value="EMPLOYEE">Make Employee</option>
                             <option value="ASSET_MANAGER">Make Asset Manager</option>

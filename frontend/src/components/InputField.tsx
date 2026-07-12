@@ -1,9 +1,9 @@
-import React from 'react';
+import { Dropdown } from './Dropdown';
 
 interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> {
   label: string;
   type?: 'text' | 'number' | 'password' | 'email' | 'date' | 'datetime-local' | 'time' | 'select' | 'textarea' | 'checkbox';
-  options?: { value: string; label: string }[];
+  options?: { value: string | number; label: string }[];
   rows?: number;
   error?: string;
   containerClassName?: string;
@@ -33,22 +33,22 @@ export const InputField: React.FC<InputFieldProps> = ({
       )}
 
       {type === 'select' ? (
-        <select
-          id={inputId}
-          className={`${inputBaseStyles} ${className}`}
-          {...(props as React.SelectHTMLAttributes<HTMLSelectElement>)}
-        >
-          {children ? children : (
-            <>
-              <option value="">Select...</option>
-              {options.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </>
-          )}
-        </select>
+        <Dropdown
+          value={(props.value as string) || ''}
+          onChange={(val) => {
+            if (props.onChange) {
+              const fakeEvent = {
+                target: {
+                  name: props.name || '',
+                  value: val,
+                },
+              } as any;
+              props.onChange(fakeEvent);
+            }
+          }}
+          options={options}
+          placeholder="Select..."
+        />
       ) : type === 'textarea' ? (
         <textarea
           id={inputId}

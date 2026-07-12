@@ -1,4 +1,4 @@
-backend
+backend/.env
 docker-compose.yml
 
 documentation.md
