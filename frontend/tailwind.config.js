@@ -8,24 +8,37 @@ export default {
     extend: {
       colors: {
         brand: {
-          50: '#f0f4ff',
-          100: '#e1e9ff',
-          200: '#c7d7ff',
-          300: '#9db8ff',
-          400: '#6b8eff',
-          500: '#3b5eff',
-          600: '#253beb',
-          700: '#1d29d4',
-          800: '#1821ad',
-          900: '#1b228a',
-          DEFAULT: '#253beb', // Royal SaaS Blue
+          50: '#faf5ff',
+          100: '#f3e8ff',
+          200: '#e9d5ff',
+          300: '#d8b4fe',
+          400: '#c084fc',
+          500: '#a855f7',
+          600: '#9333ea',
+          700: '#7e22ce',
+          800: '#6b21a8',
+          900: '#581c87',
+          DEFAULT: '#a855f7', // Premium Lavender/Purple
         },
+        // We map standard slate values to natural light-mode counterparts
+        // so the colors feel premium, soft, and readable.
         slate: {
-          850: '#151f32',
-          950: '#0b111e',
+          50: '#1e293b',
+          100: '#1e293b', // Natural Charcoal dark text (instead of harsh black)
+          200: '#334155',
+          300: '#475569',
+          400: '#475569', // Muted text
+          500: '#64748b',
+          600: '#94a3b8',
+          700: '#cbd5e1',
+          800: '#e2e8f0', // Border lines
+          850: '#f8fafc', // Alternating bg
+          900: '#ffffff', // Card container bg (Pure White)
+          950: '#f6f8fb', // Soft natural page layout bg
         }
       },
     },
   },
   plugins: [],
 }
+

@@ -33,7 +33,7 @@ export const Card: React.FC<CardProps> = ({
       <div className="flex justify-between items-start">
         <div className="space-y-2">
           <span className="text-xs text-slate-400 font-semibold block uppercase tracking-wider">{title}</span>
-          <div className="text-3xl font-extrabold text-white">{value}</div>
+          <div className="text-3xl font-extrabold text-slate-100">{value}</div>
         </div>
         <div className="shrink-0">
           {icon}

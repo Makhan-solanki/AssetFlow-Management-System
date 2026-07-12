@@ -8,17 +8,48 @@
   }
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar for Light Theme */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  @apply bg-slate-900;
+  background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-slate-700 rounded-full;
+  background: #cbd5e1;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-brand-600;
+  background: #a855f7;
+}
+
+/* Premium Light Theme Typography & Form Elements overrides */
+h1, h2, h3, h4, h5, h6 {
+  color: #1e293b !important;
+}
+
+/* Fix table headers color */
+th {
+  color: #475569 !important;
+}
+
+/* Force light input border transitions */
+input, select, textarea {
+  border-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #a855f7 !important;
+  --tw-ring-color: #a855f7 !important;
+}
+
+/* 
+  Prevent text-white blending into white card/page backgrounds.
+  Translates text-white to natural charcoal (#1e293b) except when inside buttons,
+  purple brand panels, status banners, or tags.
+*/
+.text-white:not(button):not(button *):not(a):not(a *):not(.bg-brand *):not(.bg-red-650 *):not(.bg-red-600 *):not(.bg-emerald-600 *):not(.bg-red-950 *):not(.bg-emerald-950 *):not(.bg-amber-500 *) {
+  color: #1e293b !important;
 }
