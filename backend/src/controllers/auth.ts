@@ -7,6 +7,7 @@ import { sendResponse } from '../utils/response';
 import { asyncHandler } from '../utils/asyncHandler';
 import { AuthenticatedRequest } from '../middlewares/auth';
 import { Role } from '../utils/enums';
+import { sendVerificationEmail } from '../utils/mailer';
 import { env } from '../config/env';
 
 export const signup = asyncHandler(
@@ -30,7 +31,7 @@ export const signup = asyncHandler(
     const hashedPassword = await bcrypt.hash(password, 10);
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-    console.log(`✉️ Simulated Verification Email sent to ${email}. OTP Code: ${code}`);
+    await sendVerificationEmail(email, code);
 
     const user = await prisma.user.create({
       data: {

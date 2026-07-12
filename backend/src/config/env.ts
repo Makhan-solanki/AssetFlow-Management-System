@@ -10,6 +10,10 @@ const envSchema = z.object({
   JWT_EXPIRES_IN: z.string().default('7d'),
   REDIS_URL: z.string().optional().default('redis://localhost:6379'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.string().optional(),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
